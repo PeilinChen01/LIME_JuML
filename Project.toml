@@ -1,0 +1,25 @@
+name = "LIME_JuML"
+uuid = "140e1cc2-1c66-4668-82d2-d564195cb585"
+authors = ["Peilin Chen <peilin.chen@campus.tu-berlin.de>"]
+version = "1.0.0-DEV"
+
+[deps]
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+ExplainableAI = "4f1bc3e1-d60d-4ed0-9367-9bdff9846d3b"
+GLM = "38e38edf-8417-5370-95a0-9cbb8c7f171a"
+Lasso = "b4fcebef-c861-5a0f-a7e2-ba9dc32b180a"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+RelevancePropagation = "0be6dd02-ae9e-43eb-b318-c6e81d6890d8"
+VisionHeatmaps = "27106da1-f8bc-4ca8-8c66-9b8289f1e035"
+XAIBase = "9b48221d-a747-4c1b-9860-46a1d8ba24a7"
+Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
+
+[compat]
+julia = "1.10"
+DataFrames = "1"
+Distributions = "0.25"
+GLM = "1"
+Lasso = "0.7"
+XAIBase = "3"
