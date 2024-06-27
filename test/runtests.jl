@@ -9,4 +9,10 @@ using XAIBase
         @test times_two(4) == 8
         @test times_two(5) == 10
     end
+
+    @testset "times three tests" begin
+        @test times_three(2.0) == 6.0
+        @test times_three(4) == 12
+        @test times_three(5) == 15
+    end
 end

@@ -4,6 +4,6 @@ module LIME_JuML
 include("lime.jl")
 
 export LIME
-export times_two
+export times_two, times_three
 
 end # end module

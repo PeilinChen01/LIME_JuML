@@ -38,6 +38,10 @@ function times_two(x)
     return x * 2
 end
 
+function times_three(x)
+    return x * 3
+end
+
 function (method::LIME)(input, output_selector::AbstractOutputSelector)
     output = method.model(input)                        # y = f(x)
     output_selection = output_selector(output)          # relevant output
