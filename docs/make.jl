@@ -8,7 +8,7 @@ makedocs(;
     authors="Peilin Chen <peilin.chen@campus.tu-berlin.de>",
     sitename="LIME_JuML.jl",
     format=Documenter.HTML(;
-        canonical="https://PeilinChen01.github.io/LIME_JuML.jl",
+        canonical="https://PeilinChen01.github.io/LIME_JuML",
         edit_link="main",
         assets=String[],
     ),
