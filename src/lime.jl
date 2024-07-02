@@ -3,6 +3,7 @@ using XAIBase
 using Random
 using LinearAlgebra
 using GLMNet # Import GLMNet package for LassoPath
+
 """
     LIME(model)
 
@@ -88,10 +89,10 @@ function sparse_linear_explanations(model, x, x_dash, N, K)
     Z_target_weighted = Z_target .* sqrt.(Z_weights)
 
     # Create Lasso regression model using GLMNet
-    lasso_model = fit(Lasso, Z_features_weighted, Z_target_weighted, λ=0.1)
+    lasso_model = fit(LassoPath, Z_features_weighted, Z_target_weighted)  # L1-regularized linear regression
     
     # Get coefficients path from the fitted model
-    coefficients_path = coef(lasso_model)
+    coefficients_path = lasso_model.coefs
 
     # Select the optimal coefficients
     optimal_coefficients = coefficients_path[:, end]
