@@ -19,6 +19,6 @@ makedocs(;
 )
 
 deploydocs(;
-    repo="github.com/PeilinChen01/LIME_JuML.jl",
+    repo="github.com/PeilinChen01/LIME_JuML",
     devbranch="main",
 )
