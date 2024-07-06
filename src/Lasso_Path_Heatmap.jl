@@ -12,7 +12,7 @@ using ColorTypes
 # 加载 MNIST 数据集
 # load MNIST dataset
 function load_mnist_data()
-    train_x, train_y = MNIST.traindata()
+    train_x, train_y = MNIST(split=:train)[:]
     return train_x, train_y
 end
 
