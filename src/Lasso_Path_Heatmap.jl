@@ -56,12 +56,13 @@ function sparse_linear_explanations_with_heatmap(f, x, x_prime, N, K)
     Z_features_weighted = Z_features .* sqrt.(Z_weights)
     Z_target_weighted = Z_target .* sqrt.(Z_weights)
 
+    println(size(Z_features_weighted),size(Z_target_weighted))
     # 生成 λ 序列
     λ_seq = generate_lambda_sequence(Z_features_weighted, Z_target_weighted)
 
     # 创建 Lasso 回归模型并获取系数路径
     lasso_model = fit(LassoPath, Z_features_weighted, Z_target_weighted)
-    coefficients_path = coef(lasso_model)
+    coefficients_path = Lasso.coef(lasso_model)
     lambda_values = lasso_model.λ
 
     # 绘制 λ 路径图

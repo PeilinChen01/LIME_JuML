@@ -11,7 +11,7 @@ img = load("Image/Clownfish.jpg")
 height, width = size(img)
 
 # Felzenszwalb superpixel segmentation
-segments = felzenszwalb(img, 1, 1)  # Input: image, scale parameter, minimum size of superpixels
+segments = felzenszwalb(img, 1, 200)  # Input: image, scale parameter, minimum size of superpixels
 
 # Generate superpixel labels
 superpixel_labels = labels_map(segments)
@@ -63,43 +63,51 @@ seg_img = reshape(seg_colored, size(img))
 plot(heatmap(seg_img), title="Felzenszwalb Superpixel Segmentation", size=(800, 600))
 
 # Function to perturb the image with deactivated superpixels
-function perturb_image(img, superpixels, deactived=100)
+function create_deactivation_matrix(num_superpixels, num_deactivated, samples)
+    deactivated_superpixels = []
+    for _ in 1:samples
+        row = rand(1:num_superpixels, num_deactivated)
+        push!(deactivated_superpixels, row)
+    end
+    return deactivated_superpixels
+end
+
+function perturb_image(img, superpixels, num_deactivated=30, samples=100)
     num_superpixels = maximum(superpixels)
-    deactived_superpixels = rand(Bool, deactived, num_superpixels)
+    deactivated_superpixels = create_deactivation_matrix(num_superpixels, num_deactivated, samples)
     perturbed_images = []
-    
-    for sample in eachrow(deactived_superpixels)
+    for sample in deactivated_superpixels
         perturbed_img = copy(img)
-        for i in 1:num_superpixels
-            if !sample[i]
-                perturbed_img[superpixels .== i] .= 0.0
-            end
+        for id in sample
+            perturbed_img[superpixels .== id] .= 0.0
         end
         push!(perturbed_images, perturbed_img)
     end
-    
-    return perturbed_images, deactived_superpixels
+    return perturbed_images, deactivated_superpixels
 end
 
 # Generate perturbed images
-perturbed_images, deactived_superpixels = perturb_image(seg_img, superpixel_labels)
+perturbed_images, deactived_superpixels = perturb_image(img, superpixel_labels)
 
 # Plot one of the perturbed images
-plot(heatmap(perturbed_images[100]), title="Perturbed Felzenszwalb Superpixel Segmentation", size=(800, 600))
+# plot(heatmap(perturbed_images[1]), title="Perturbed Felzenszwalb Superpixel Segmentation", size=(800, 600))
 
-# Function to isolate and plot a superpixel in the original image
-function plot_label(label, superpixel_labels, img)
-    # Create mask for the chosen superpixel
-    mask = superpixel_labels .== label
+function plot_labels(labels, superpixel_labels, img)
+    # Create a mask for the chosen superpixels
+    mask = zeros(Bool, size(superpixel_labels))
+    for label in labels
+        mask .|= (superpixel_labels .== label)
+    end
 
     # Set all other pixels to black
     highlighted_img = copy(img)
-    highlighted_img[.!(mask)] .= RGB(0.0, 0.0, 0.0)
+    highlighted_img[.!mask] .= RGB(0.0, 0.0, 0.0)
 
     # Plot the result
-    plot(highlighted_img, title="Superpixel Label $label", size=(800, 600))
+    plot(highlighted_img, size=(800, 600))
 end
 
 # Example to plot a specific superpixel
-label_to_plot = 2
-plot_label(label_to_plot, superpixel_labels, img)
+label_to_plot = 1
+plot_labels(label_to_plot, superpixel_labels, img)
+

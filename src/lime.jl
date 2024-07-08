@@ -14,101 +14,55 @@ TODO: write better documentation.
 struct LIME{M} <: AbstractXAIMethod
     model::M
 end
+include("superpixel_lime.jl")
+include("image_lime.jl")
 
-# Function: creating N sample points around x_dash
-"""
-    sample_around(x_dash, N=100, std_dev=0.1)
+export LIME
+export predict_fn
+export batched_image
+export calculate_similarity
+export weighted_probabilities
+export run_lasso_regression
+export create_deactivation_matrix
+export perturb_image
+export plot_labels
 
-Create N sample points around x_dash.
+# Load and preprocess image
+img = load("Image/Clownfish.jpg")
+img_permute = permutedims(channelview(img), (3, 2, 1))
+img_permute = reshape(img_permute, size(img_permute)..., 1)
+input = Float32.(img_permute)
 
-# Arguments
-x_dash: The center point for sampling.
-N: The number of samples to create (default is 100).
-std_dev: The standard deviation for the normal distribution used for sampling (default is 0.1).
+# Define the model
+model = ResNet(18; pretrain = true)
 
-# Returns
-Array of sample points around x_dash.
-"""
-function sample_around(x_dash, N=100, std_dev=0.1)
-    z_dash = [x_dash .+ randn(length(x_dash)) .* std_dev for _ in 1:N]
-    return z_dash
-end
+probs, target_label = predict_fn(input, 5)
 
-# Function to calculate the distance between the original x and x_dash
-"""
-    similarity_kernel(x, x_dash, std_dist=1.0)
+# Felzenszwalb superpixel segmentation
+segments = felzenszwalb(img, 1, 200)            # Input als args
+superpixel_labels = labels_map(segments)
 
-Calculate the distance between the original x and x_dash.
+max_label = maximum(superpixel_labels)
 
-# Arguments
-x: The original point.
-x_dash: A sample point.
-std_dist: The width of the Gaussian kernel (default is 1.0).
+# Generate perturbed images
+perturbed_images, deactivated_superpixels = perturb_image(img, superpixel_labels)
 
-# Returns
-The distance as a float.
-"""
-function similarity_kernel(x, x_dash, std_dist=1.0)
-    return exp(-norm(x - x_dash)^2 / (std_dist^2))
-end
+# Process perturbed images through the model
+probabilities = batched_image(perturbed_images, target_label)
 
+similarities = calculate_similarity(img, perturbed_images)
 
-# Sparse linear explanations function
-"""
-    sparse_linear_explanations(model, x, x_dash, N, K)
+weighted_probs = weighted_probabilities(probabilities, similarities)
 
-Generate a sparse linear explanation for a given model `f` around a point `x`.
+lasso_model = run_lasso_regression(perturbed_images, weighted_probs, deactivated_superpixels)
 
-# Arguments
-model: The model to explain.
-x: The original input point.
-x_dash: A perturbed version of the input point `x`.
-N: Number of samples to generate around `x`.
-K: Number of top features to select for the explanation.
+coef_lasso = Lasso.coef(lasso_model)
 
-# Returns
-The top K coefficients of the explanation.
-"""
-function sparse_linear_explanations(model, x, x_dash, N, K)
-    Z_features = Array{Float64}(undef, N, length(x_dash))
-    Z_target = Vector{Float64}(undef, N)
-    Z_weights = Vector{Float64}(undef, N)
+optimal_coefs = coef_lasso[:, 10]
 
-    # Generate N samples at once
-    z_dashes = sample_around(x_dash, N) 
+important_superpixels = findall(optimal_coefs .!= 0)
 
-    for i in 1:N
-        z_dash = z_dashes[i]  # Retrieve the sample
-        Z_features[i, :] = z_dash
-        Z_target[i] = model(z_dash)
-        Z_weights[i] = similarity_kernel(x, z_dash)  # Compute weights inline
-    end
-
-    # Apply weights to the feature matrix and target vector (sqrt is applied on the weights because of the ^2 of the distance function)
-    Z_features_weighted = Z_features .* sqrt.(Z_weights)
-    Z_target_weighted = Z_target .* sqrt.(Z_weights)
-
-    # Create Lasso regression model using GLMNet
-    lasso_model = fit(LassoPath, Z_features_weighted, Z_target_weighted)  # L1-regularized linear regression
-    
-    # Get coefficients path from the fitted model
-    coefficients_path = lasso_model.coefs
-
-    # Select the optimal coefficients
-    optimal_coefficients = coefficients_path[:, end]
-
-    # Ensure K does not exceed the number of features
-    K = min(K, length(optimal_coefficients))
-
-    # Sort the coefficients by their absolute values and select the top K features
-    top_k_indices = sortperm(abs.(optimal_coefficients), rev=true)[1:K]
-
-    # Extract the top K coefficients
-    top_k_coefs = optimal_coefficients[top_k_indices]
-
-    return top_k_coefs
-end
-
+plot_labels(important_superpixels, superpixel_labels, img)
 
 # """
 #     times_two(x)

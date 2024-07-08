@@ -2,7 +2,7 @@
 
 julia_version = "1.10.3"
 manifest_format = "2.0"
-project_hash = "b77e1aaafbdbeb4038fcc85487f5e3e4494df12f"
+project_hash = "de92bba1fa6322c54bc668286b09e10c39300e97"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -261,6 +261,12 @@ git-tree-sha1 = "b8fe8546d52ca154ac556809e10c75e6e7430ac8"
 uuid = "944b1d66-785c-5afd-91f1-9de20f533193"
 version = "0.7.5"
 
+[[deps.ColorBlendModes]]
+deps = ["ColorTypes", "FixedPointNumbers"]
+git-tree-sha1 = "9ec825436862d5ab02ad8f2cde72f2d860151fa6"
+uuid = "60508b50-96e1-4007-9d6c-f475c410f16b"
+version = "0.2.4"
+
 [[deps.ColorSchemes]]
 deps = ["ColorTypes", "ColorVectorSpace", "Colors", "FixedPointNumbers", "PrecompileTools", "Random"]
 git-tree-sha1 = "4b270d6465eb21ae89b732182c20dc165f8bf9f2"
@@ -388,6 +394,12 @@ version = "0.7.9"
 git-tree-sha1 = "abe83f3a2f1b857aac70ef8b269080af17764bbe"
 uuid = "9a962f9c-6df0-11e9-0e5d-c546b8b5ee8a"
 version = "1.16.0"
+
+[[deps.DataAugmentation]]
+deps = ["ColorBlendModes", "CoordinateTransformations", "Distributions", "ImageCore", "ImageDraw", "ImageTransformations", "IndirectArrays", "Interpolations", "LinearAlgebra", "MosaicViews", "OffsetArrays", "Parameters", "Random", "Rotations", "Setfield", "StaticArrays", "Statistics", "Test"]
+git-tree-sha1 = "34a0457eb7405b53ce554205b45fce32ed04667a"
+uuid = "88a5189c-e7ff-4f85-ac6b-e6158070f02e"
+version = "0.2.12"
 
 [[deps.DataDeps]]
 deps = ["HTTP", "Libdl", "Reexport", "SHA", "Scratch", "p7zip_jll"]
@@ -836,6 +848,12 @@ deps = ["Distances", "ImageCore", "ImageMorphology", "LinearAlgebra", "Statistic
 git-tree-sha1 = "08b0e6354b21ef5dd5e49026028e41831401aca8"
 uuid = "51556ac3-7006-55f5-8cb3-34580c88182d"
 version = "0.2.17"
+
+[[deps.ImageDraw]]
+deps = ["Distances", "ImageCore", "LinearAlgebra"]
+git-tree-sha1 = "a547622ba30143363a844350c8cfb84f40b5a796"
+uuid = "4381153b-2b60-58ae-a1ba-fd683676385f"
+version = "0.2.6"
 
 [[deps.ImageFiltering]]
 deps = ["CatIndices", "ComputationalResources", "DataStructures", "FFTViews", "FFTW", "ImageBase", "ImageCore", "LinearAlgebra", "OffsetArrays", "PrecompileTools", "Reexport", "SparseArrays", "StaticArrays", "Statistics", "TiledIteration"]
