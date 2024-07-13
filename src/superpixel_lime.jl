@@ -1,22 +1,8 @@
 using Images
-using TestImages
+using Random
 using ImageSegmentation
 using ColorTypes
-using Plots
 
-# Load image
-img = load("Image/Clownfish.jpg")
-# img = Gray.(testimage("house"))
-
-height, width = size(img)
-
-# Felzenszwalb superpixel segmentation
-segments = felzenszwalb(img, 1, 200)  # Input: image, scale parameter, minimum size of superpixels
-
-# Generate superpixel labels
-superpixel_labels = labels_map(segments)
-
-# Function to generate the average color of the superpixels
 function average_color(img, labels, label)
     if eltype(img) <: Gray
         total = 0.0
@@ -51,46 +37,40 @@ function average_color(img, labels, label)
     end
 end
 
-# Number of superpixels
-max_label = maximum(superpixel_labels)
-
-# Generating the average color of each superpixel
-avg_colors = [average_color(img, superpixel_labels, label) for label in 0:max_label]
-seg_colored = [avg_colors[label+1] for label in superpixel_labels]
-
-# Plot the superpixels
-seg_img = reshape(seg_colored, size(img))
-plot(heatmap(seg_img), title="Felzenszwalb Superpixel Segmentation", size=(800, 600))
-
 # Function to perturb the image with deactivated superpixels
-function create_deactivation_matrix(num_superpixels, num_deactivated, samples)
-    deactivated_superpixels = []
-    for _ in 1:samples
-        row = rand(1:num_superpixels, num_deactivated)
-        push!(deactivated_superpixels, row)
+function create_deactivation_matrix(num_superpixels, samples, threshold=0.03)
+    # creates a matrix with numbers between 0 and 1
+    rand_matrix = rand(samples, num_superpixels)
+    
+    # all numbers under the threshold will be set to 1, the rest will be set to 0
+    deactivated_matrix = rand_matrix .< threshold
+    
+    # checks deactivation of superpixels
+    for superpixel in 1:num_superpixels
+        if !any(deactivated_matrix[:, superpixel])
+            sample_index = rand(1:samples)
+            deactivated_matrix[sample_index, superpixel] = true
+        end
     end
-    return deactivated_superpixels
+
+    return deactivated_matrix
 end
 
-function perturb_image(img, superpixels, num_deactivated=30, samples=100)
+function perturb_image(img, superpixels, samples=100)
     num_superpixels = maximum(superpixels)
-    deactivated_superpixels = create_deactivation_matrix(num_superpixels, num_deactivated, samples)
+    deactivated_superpixels = create_deactivation_matrix(num_superpixels, samples)
     perturbed_images = []
-    for sample in deactivated_superpixels
+    for i in 1:samples
         perturbed_img = copy(img)
-        for id in sample
-            perturbed_img[superpixels .== id] .= 0.0
+        for id in 1:num_superpixels
+            if deactivated_superpixels[i, id] == 1
+                perturbed_img[superpixels .== id] .= 0.0
+            end
         end
         push!(perturbed_images, perturbed_img)
     end
     return perturbed_images, deactivated_superpixels
 end
-
-# Generate perturbed images
-perturbed_images, deactived_superpixels = perturb_image(img, superpixel_labels)
-
-# Plot one of the perturbed images
-# plot(heatmap(perturbed_images[1]), title="Perturbed Felzenszwalb Superpixel Segmentation", size=(800, 600))
 
 function plot_labels(labels, superpixel_labels, img)
     # Create a mask for the chosen superpixels
@@ -107,7 +87,29 @@ function plot_labels(labels, superpixel_labels, img)
     plot(highlighted_img, size=(800, 600))
 end
 
-# Example to plot a specific superpixel
-label_to_plot = 1
-plot_labels(label_to_plot, superpixel_labels, img)
+# # Example to plot a specific superpixel
+# label_to_plot = 1
+# plot_labels(label_to_plot, superpixel_labels, img)
 
+# # Load image
+# img = load("Image/Clownfish.jpg")
+# img = Gray.(testimage("house"))
+
+# height, width = size(img)
+
+# # Felzenszwalb superpixel segmentation
+# segments = felzenszwalb(img, 1, 200)  # Input: image, scale parameter, minimum size of superpixels
+
+# # Generate superpixel labels
+# superpixel_labels = labels_map(segments)
+
+# # Number of superpixels
+# max_label = maximum(superpixel_labels)
+
+# # Generating the average color of each superpixel
+# avg_colors = [average_color(img, superpixel_labels, label) for label in 0:max_label]
+# seg_colored = [avg_colors[label+1] for label in superpixel_labels]
+
+# # Plot the superpixels
+# seg_img = reshape(seg_colored, size(img))
+# plot(heatmap(seg_img), title="Felzenszwalb Superpixel Segmentation", size=(800, 600))

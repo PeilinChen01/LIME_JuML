@@ -1,86 +1,70 @@
 # lime implementation
-using XAIBase
-using Random
 using LinearAlgebra
-using GLMNet # Import GLMNet package for LassoPath
-
+using XAIBase
 """
     LIME(model)
 
-Create a LIME analyzer.
+# Arguments
+- `model::M`: A machine learning model which is used to make predictions. The model should be callable with input data and return output predictions.
 
-TODO: write better documentation.
+# Description
+The `LIME` (Local Interpretable Model-agnostic Explanations) struct creates an analyzer for explaining the predictions of a machine learning model. LIME aims to provide interpretable explanations for the predictions made by black-box models by approximating the model locally with an interpretable model.
+
+# Usage
+
+
 """
 struct LIME{M} <: AbstractXAIMethod
     model::M
 end
-include("superpixel_lime.jl")
-include("image_lime.jl")
 
-export LIME
-export predict_fn
-export batched_image
-export calculate_similarity
-export weighted_probabilities
-export run_lasso_regression
-export create_deactivation_matrix
-export perturb_image
-export plot_labels
+function (method::LIME)(input, output_selector::AbstractOutputSelector)
+    output = method.model(input)                        
+    output_selection = output_selector(output)          
 
-# Load and preprocess image
-img = load("Image/Clownfish.jpg")
-img_permute = permutedims(channelview(img), (3, 2, 1))
-img_permute = reshape(img_permute, size(img_permute)..., 1)
-input = Float32.(img_permute)
+    val = explain_image(input, output_selection[1], method.model)
+    extras = nothing
+    return Explanation(val, output, output_selection, :LIME, :attribution, extras)
+end
 
-# Define the model
-model = ResNet(18; pretrain = true)
+# # Load and preprocess image
+# img = load("Image/Clownfish.jpg")
+# img_permute = permutedims(channelview(img), (3, 2, 1))
+# img_permute = reshape(img_permute, size(img_permute)..., 1)
+# input = Float32.(img_permute)
 
-probs, target_label = predict_fn(input, 5)
+# # Define the model
+# model = ResNet(18; pretrain = true)
 
-# Felzenszwalb superpixel segmentation
-segments = felzenszwalb(img, 1, 200)            # Input als args
-superpixel_labels = labels_map(segments)
+# analyzer = LIME(model)
 
-max_label = maximum(superpixel_labels)
+# expl = analyze(input, analyzer)
 
-# Generate perturbed images
-perturbed_images, deactivated_superpixels = perturb_image(img, superpixel_labels)
+# probs, target_index = predict_fn(input, model)
 
-# Process perturbed images through the model
-probabilities = batched_image(perturbed_images, target_label)
+# # Felzenszwalb superpixel segmentation
+# segments = felzenszwalb(img, 3, 200)            # Input als args
+# superpixel_labels = labels_map(segments)
 
-similarities = calculate_similarity(img, perturbed_images)
+# # Number of superpixels
+# max_label = maximum(superpixel_labels)
 
-weighted_probs = weighted_probabilities(probabilities, similarities)
+# # Generate perturbed images
+# perturbed_images, deactivated_superpixels = perturb_image(img, superpixel_labels)
 
-lasso_model = run_lasso_regression(perturbed_images, weighted_probs, deactivated_superpixels)
+# # Process perturbed images through the model
+# probabilities = batched_image(perturbed_images, target_index, model)
 
-coef_lasso = Lasso.coef(lasso_model)
+# similarities = calculate_similarity(img, perturbed_images)
 
-optimal_coefs = coef_lasso[:, 10]
+# weighted_probs = weighted_probabilities(probabilities, similarities)
 
-important_superpixels = findall(optimal_coefs .!= 0)
+# lasso_model = run_lasso_regression(perturbed_images, weighted_probs, deactivated_superpixels)
 
-plot_labels(important_superpixels, superpixel_labels, img)
+# coef_lasso = Lasso.coef(lasso_model)
 
-# """
-#     times_two(x)
+# optimal_coefs = coef_lasso[:, 10]
 
-# Multiplies inputs by three
-# """
-# function times_two(x)
-#     return x * 2
-# end
+# important_superpixels = findall(optimal_coefs .!= 0)
 
-# function (method::LIME)(input, output_selector::AbstractOutputSelector)
-#     output = method.model(input)                        # y = f(x)
-#     output_selection = output_selector(output)          # relevant output
-  
-# #### Compute VJP at the Points of the output_selector
-#     v = zero(output)                                    # vector with zeros
-#     v[output_selection] .= 1                            # ones at the relevant indices
-#     val = only(back(v))                                 # VJP to get the gradient - v*(dy/dx)
-# ###
-#     return Explanation(val, output, output_selection, :LIME, :attribution, nothing)
-# end
+# plot_labels(important_superpixels, superpixel_labels, img)
