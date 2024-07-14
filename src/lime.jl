@@ -1,4 +1,5 @@
 # lime implementation
+using XAIBase
 using LinearAlgebra
 """
     LIME(model)
