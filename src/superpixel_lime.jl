@@ -2,6 +2,7 @@ using Images
 using Random
 using ImageSegmentation
 using ColorTypes
+using Plots
 
 """
     average_color(img, labels, label)
@@ -64,7 +65,7 @@ Create a deactivation matrix for superpixels.
 # Arguments
 - `num_superpixels`: The number of superpixels in the image.
 - `samples`: The number of perturbed image samples to generate.
-- `threshold`: The probability threshold for deactivating a superpixel (default is 0.03).
+- `threshold`: The probability threshold for deactivating a superpixel (default is 0.05).
 
 # Returns
 - `deactivated_matrix`: A binary matrix of size (samples, num_superpixels) where each entry indicates whether a superpixel is deactivated (1) or not (0).
@@ -86,7 +87,7 @@ deactivated_matrix = create_deactivation_matrix(50, 100)
 println(deactivated_matrix)
 """
 
-function create_deactivation_matrix(num_superpixels, samples, threshold=0.03)
+function create_deactivation_matrix(num_superpixels, samples, threshold=0.05)
     # creates a matrix with numbers between 0 and 1
     rand_matrix = rand(samples, num_superpixels)
     
@@ -127,11 +128,6 @@ The deactivation process involves:
    - Copying the original image.
    - Deactivating the superpixels specified by the deactivation matrix by setting the pixel values to 0.
    - Storing the perturbed image in a vector.
-
-# Example
-```julia
-using Images, ImageSegmentation
-
 """
 
 function perturb_image(img, superpixels, samples=100)
