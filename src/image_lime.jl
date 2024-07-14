@@ -227,7 +227,7 @@ Generates a visual explanation for a given image using Lasso regression and supe
 # Arguments
 - `input::Array{Float32, 4}`: The input image tensor with shape (C, H, W, N), where C is the number of color channels (3 for RGB), H is the height, W is the width, and N is the batch size. The tensor is assumed to be in (Channel, Height, Width) format.
 - `target_index::Int`: The index of the target class for which the explanation is to be generated. This is used to extract the probabilities associated with the target class.
-- `model::AbstractModel`: The trained model used for making predictions on the perturbed images. The model should be compatible with the `batched_image` function to process images and extract probabilities.
+- `model`: The trained model used for making predictions on the perturbed images. The model should be compatible with the `batched_image` function to process images and extract probabilities.
 
 # Returns
 - `coef_img::Array{Float32, 2}`: A 2D array representing the importance of each superpixel for the target class. This image can be visualized to understand which parts of the image are more significant for the model's prediction.
@@ -262,7 +262,7 @@ This function creates a visual explanation of the image by performing the follow
 9. **Map Coefficients to Image**:
    - Maps the coefficients to the superpixel labels to generate a visual explanation.
 """
-function explain_image(input::Array{Float32, 2}, target_index::Int, model::AbstractModel)
+function explain_image(input::Array{Float32, 2}, target_index::Int, model)
 
         # creating the origanal image
         img_permute_back = reshape(input, size(input)[1:3]...)
