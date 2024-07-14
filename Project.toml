@@ -17,6 +17,10 @@ Metalhead = "dbeba491-748d-5e0e-a39e-b530a07fa0cc"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 VisionHeatmaps = "27106da1-f8bc-4ca8-8c66-9b8289f1e035"
 XAIBase = "9b48221d-a747-4c1b-9860-46a1d8ba24a7"
+BSON = "fbb218c0-5317-5bc6-957e-2ee96dd4b1f0"
+Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
+MLDatasets = "eb30cadb-4394-5ae3-aed4-317e484a6458"
+StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
 [compat]
 DataFrames = "1"
