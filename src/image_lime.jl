@@ -191,6 +191,7 @@ function run_lasso_regression(weighted_probs::Vector, deactivated_superpixels::B
     
     return lasso_model
 end
+
 """
     map_coefficients_to_image(superpixel_labels, coefficients)
 

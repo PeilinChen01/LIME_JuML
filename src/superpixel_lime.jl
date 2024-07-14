@@ -22,7 +22,6 @@ Calculate the average color of a specific superpixel region in an image.
 This function calculates the average color of a given superpixel region within an image. For grayscale images, it computes the average gray value and converts it to an RGB color. For colored images, it calculates the average red, green, and blue values.
 
 """
-
 function average_color(img, labels, label)
     if eltype(img) <: Gray
         total = 0.0
@@ -86,7 +85,6 @@ deactivated_matrix = create_deactivation_matrix(50, 100)
 # Print the deactivation matrix
 println(deactivated_matrix)
 """
-
 function create_deactivation_matrix(num_superpixels, samples, threshold=0.05)
     # creates a matrix with numbers between 0 and 1
     rand_matrix = rand(samples, num_superpixels)
@@ -129,7 +127,6 @@ The deactivation process involves:
    - Deactivating the superpixels specified by the deactivation matrix by setting the pixel values to 0.
    - Storing the perturbed image in a vector.
 """
-
 function perturb_image(img, superpixels, samples=100)
     num_superpixels = maximum(superpixels)
     deactivated_superpixels = create_deactivation_matrix(num_superpixels, samples)
@@ -164,7 +161,6 @@ The process involves:
 2. Setting all other pixels in the image to black.
 3. Plotting the result.
 """
-
 function plot_labels(labels, superpixel_labels, img)
     # Create a mask for the chosen superpixels
     mask = zeros(Bool, size(superpixel_labels))
