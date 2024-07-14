@@ -50,7 +50,7 @@ function (method::LIME)(input, output_selector::AbstractOutputSelector)
 end
 
 # # Load and preprocess image
-# img = load("Image/Clownfish.jpg")
+# img = load("Image/panda.jpg")
 # img_permute = permutedims(channelview(img), (3, 2, 1))
 # img_permute = reshape(img_permute, size(img_permute)..., 1)
 # input = Float32.(img_permute)

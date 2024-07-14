@@ -78,7 +78,7 @@ target_index = 1
 probs = batched_image(perturbed_images, target_index, model)
 ```
 """
-function batched_image(perturbed_images::Vector, target_index::Int, model, K=1)
+function batched_image(perturbed_images::Vector, target_index, model, K=1)
     probabilities = []
     for img in perturbed_images
         img = permutedims(channelview(img), (3, 2, 1))
@@ -159,7 +159,7 @@ weighted_probs = weighted_probabilities(probabilities, similarities)
 # `weighted_probs` will be [0.09, 0.32, 0.21, 0.12]
 """
 function weighted_probabilities(probabilities::Vector, similarities::Vector)
-    weighted_probs = probabilities.*similarities
+    weighted_probs = probabilities.*-similarities
     return weighted_probs
 end
 
@@ -226,8 +226,8 @@ end
 Generates a visual explanation for a given image using Lasso regression and superpixel segmentation to highlight the importance of different superpixels.
 
 # Arguments
-- `input::Array{Float32, 4}`: The input image tensor with shape (C, H, W, N), where C is the number of color channels (3 for RGB), H is the height, W is the width, and N is the batch size. The tensor is assumed to be in (Channel, Height, Width) format.
-- `target_index::Int`: The index of the target class for which the explanation is to be generated. This is used to extract the probabilities associated with the target class.
+- `input`: The input image tensor with shape (C, H, W, N), where C is the number of color channels (3 for RGB), H is the height, W is the width, and N is the batch size. The tensor is assumed to be in (Channel, Height, Width) format.
+- `target_index`: The index of the target class for which the explanation is to be generated. This is used to extract the probabilities associated with the target class.
 - `model`: The trained model used for making predictions on the perturbed images. The model should be compatible with the `batched_image` function to process images and extract probabilities.
 
 # Returns
@@ -263,7 +263,7 @@ This function creates a visual explanation of the image by performing the follow
 9. **Map Coefficients to Image**:
    - Maps the coefficients to the superpixel labels to generate a visual explanation.
 """
-function explain_image(input::Array{Float32, 2}, target_index::Int, model)
+function explain_image(input, target_index, model)
 
         # creating the origanal image
         img_permute_back = reshape(input, size(input)[1:3]...)
@@ -296,7 +296,7 @@ function explain_image(input::Array{Float32, 2}, target_index::Int, model)
         coef_lasso = Lasso.coef(lasso_model)
 
         # pixel_relevance
-        coef_img = map_coefficients_to_image(superpixel_labels, coef_lasso[:, 10])
+        coef_img = map_coefficients_to_image(superpixel_labels, coef_lasso[:, 20])
 
         # return an explanation
         return coef_img

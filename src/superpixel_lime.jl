@@ -57,14 +57,14 @@ function average_color(img, labels, label)
 end
 
 """
-    create_deactivation_matrix(num_superpixels, samples, threshold=0.03)
+    create_deactivation_matrix(num_superpixels, samples, threshold=0.1)
 
 Create a deactivation matrix for superpixels.
 
 # Arguments
 - `num_superpixels`: The number of superpixels in the image.
 - `samples`: The number of perturbed image samples to generate.
-- `threshold`: The probability threshold for deactivating a superpixel (default is 0.05).
+- `threshold`: The probability threshold for deactivating a superpixel (default is 0.15).
 
 # Returns
 - `deactivated_matrix`: A binary matrix of size (samples, num_superpixels) where each entry indicates whether a superpixel is deactivated (1) or not (0).
@@ -85,7 +85,7 @@ deactivated_matrix = create_deactivation_matrix(50, 100)
 # Print the deactivation matrix
 println(deactivated_matrix)
 """
-function create_deactivation_matrix(num_superpixels, samples, threshold=0.05)
+function create_deactivation_matrix(num_superpixels, samples, threshold=0.15)
     # creates a matrix with numbers between 0 and 1
     rand_matrix = rand(samples, num_superpixels)
     
