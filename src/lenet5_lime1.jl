@@ -37,7 +37,7 @@ model = Chain(
 
 # Load pre-trained model weights (assuming the weights are saved in 'lenet5_model.bson')
 using BSON: @load
-@load "lenet5_model1.bson" model
+@load "../model/lenet5_model1.bson" model
 
 # Select a test instance to explain
 n = 5
