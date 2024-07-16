@@ -3,7 +3,7 @@ using Documenter
 
 DocMeta.setdocmeta!(LIME_JuML, :DocTestSetup, :(using LIME_JuML); recursive=true)
 
-makedocs(;
+makedocs(
     modules=[LIME_JuML],
     authors="Peilin Chen <peilin.chen@campus.tu-berlin.de>",
     sitename="LIME_JuML.jl",
@@ -17,7 +17,7 @@ makedocs(;
         "Getting started" => "example.md",
         "Concept" => "concept.md",
         "Important Functions" => "api.md",
-    ],
+    ]
 )
 
 deploydocs(;
