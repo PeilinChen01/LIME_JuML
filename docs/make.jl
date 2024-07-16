@@ -20,7 +20,7 @@ makedocs(
     ]
 )
 
-deploydocs(;
+deploydocs(
     repo="github.com/PeilinChen01/LIME_JuML",
     devbranch="main",
 )
